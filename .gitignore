@@ -1,0 +1,17 @@
+# 後端 Java / Spring Boot 關鍵過濾
+backend/target/
+backend/.idea/
+backend/.vscode/
+backend/*.iml
+backend/.gradle/
+backend/build/
+
+# 前端 Node / JavaScript 關鍵過濾
+frontend/node_modules/
+frontend/.pnpm-store/
+frontend/dist/
+frontend/.env.local
+
+# 系統檔案
+.DS_Store
+Thumbs.db
