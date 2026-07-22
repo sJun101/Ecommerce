@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from './api';
 import { useNavigate, Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
@@ -11,32 +11,48 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // 🚀 發送登入請求
-      const res = await axios.post('http://localhost:8080/api/auth/login', {
+      const res = await api.post('/auth/login', {
         username,
         password
       });
 
-      console.log("登入成功回應：", res.data);
+      console.log("🚀 登入成功回應原始資料：", res.data);
 
-      // ✅ 儲存憑證與使用者資訊
-      if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
-        // 🎯 重點：優先存入 nickname，這會連動到 Navbar 的顯示
-        localStorage.setItem('nickname', res.data.nickname || res.data.username);
+      // 🎯 自動相容性判定：管你後端回傳物件還是字串，通通抓出 Token！
+      let token = "";
+      let nickname = username;
+
+      if (typeof res.data === 'string') {
+        token = res.data;
+      } else if (res.data && res.data.token) {
+        token = res.data.token;
+        nickname = res.data.nickname || res.data.username || username;
+      }
+
+      // 驗證 Token 是否有效
+      if (token && token.startsWith('eyJ')) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('nickname', nickname);
         
+        console.log("✅ Token 已成功寫入本地儲存區");
+
         Swal.fire({
           icon: 'success',
           title: '歡迎回來！',
-          text: `尊貴的道友 ${res.data.nickname || res.data.username}，歡迎回到修仙寶庫`,
-          timer: 1500,
+          text: `尊貴的道友 ${nickname}，歡迎回到修仙寶庫`,
+          timer: 1300,
           showConfirmButton: false
+        }).then(() => {
+          console.log("🎬 彈窗關閉，強制帶路跳轉！");
+          // 🎯 這裡改用 window.location.href 強制突圍，防止 React 路由卡死
+          window.location.href = '/products';
         });
 
-        navigate('/products');
+      } else {
+        throw new Error("通行證格式不符合 JWT 規範，請檢查後端發行端");
       }
     } catch (err) {
-      console.error("登入出錯：", err);
+      console.error("❌ 登入發生錯誤：", err);
       const errorMsg = err.response?.data || "登入失敗，請檢查道號與真言";
       Swal.fire({
         icon: 'error',
@@ -81,7 +97,6 @@ function Login() {
                 </button>
               </form>
 
-              {/* 🎯 註冊入口：解決你提到的「無註冊鈕」問題 */}
               <div className="text-center mt-4 border-top pt-3">
                 <p className="text-muted small mb-0">還沒入門嗎？</p>
                 <Link to="/register" className="text-decoration-none fw-bold text-success">
@@ -89,9 +104,6 @@ function Login() {
                 </Link>
               </div>
             </div>
-          </div>
-          <div className="text-center mt-3">
-            <small className="text-muted">© 2026 聖鈞修仙工坊 版權所有</small>
           </div>
         </div>
       </div>

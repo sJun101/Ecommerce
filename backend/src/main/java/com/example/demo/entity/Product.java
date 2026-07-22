@@ -16,6 +16,7 @@ public class Product {
     private String description;
     private BigDecimal price;
     private Integer stock;
+    private Boolean active = true;
 
     // 空的建構子 (JPA 必備)
     public Product() {}
@@ -31,5 +32,9 @@ public class Product {
     public void setPrice(BigDecimal price) { this.price = price; }
     public Integer getStock() { return stock; }
     public void setStock(Integer stock) { this.stock = stock; }
+    public Boolean getActive() {return active;}
+    public void setActive(Boolean active) {this.active = active;}
+    public void softDelete() {this.active = false; // 設為 false 即為下架
+    }
 }
 

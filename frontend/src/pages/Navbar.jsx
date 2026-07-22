@@ -1,34 +1,36 @@
-import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
 function Navbar() {
-  const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  
-  // 🎯 1. 從 localStorage 拿暱稱與角色
-  const nickname = localStorage.getItem('nickname') || '道友';
-  
-  // 🎯 2. 解析角色邏輯 (判斷是否為長老)
-  const getRole = () => {
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(window.atob(token.split('.')[1]));
-      return payload.role; // 拿取 JWT 裡的 ROLE_ADMIN 或 ROLE_USER
-    } catch (e) {
-      return null;
-    }
-  };
-  const role = getRole();
+ const [role, setRole] = useState(null);
+  const [nickname, setNickname] = useState('道友');
 
+  // 使用 useEffect 在頁面切換或 Token 變動時重新讀取
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedNickname = localStorage.getItem('nickname');
+    
+    if (token) {
+      setNickname(storedNickname || '道友');
+      try {
+        const payload = JSON.parse(window.atob(token.split('.')[1]));
+        setRole(payload.role);
+      } catch (e) {
+        setRole(null);
+      }
+    }
+  }, []); // 空陣列代表只在組件掛載時執行
+
+  // 登出時順便清除狀態
   const handleLogout = () => {
     if (window.confirm("確定要登出並結束本次修煉嗎？")) {
-      // 🎯 3. 登出時要清乾淨，包含 nickname
-      localStorage.removeItem('token');
-      localStorage.removeItem('nickname');
-      navigate('/login');
+      localStorage.clear(); // 直接清除所有相關資料
+      window.location.href = '/login'; // 強制轉址
     }
   };
 
+  // 隱藏 Navbar 的判斷
+  const token = localStorage.getItem('token');
   if (!token) return null;
 
   return (

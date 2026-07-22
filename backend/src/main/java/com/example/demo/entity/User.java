@@ -17,6 +17,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    // 💡 補上角色欄位，預設可以給 "USER"
+    @Column(nullable = false)
+    private String role = "USER";
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -25,37 +29,22 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
+    // ===== Constructor =====
+    public User() {}
+
     // ===== Getter & Setter =====
-    public User() {
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    // 🎯 補完 getRole 與 setRole
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }

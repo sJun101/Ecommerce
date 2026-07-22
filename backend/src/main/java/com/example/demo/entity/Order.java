@@ -22,6 +22,7 @@ public class Order {
     private Integer quantity;
     private BigDecimal totalAmount;
     private LocalDateTime orderDate;
+    private String status;
 
     @PrePersist
     protected void onCreate() {
@@ -40,4 +41,6 @@ public class Order {
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
     public LocalDateTime getOrderDate() { return orderDate; }
+    public String getStatus(){ return  status;}
+    public void setStatus(String status) {this.status=status;}
 }

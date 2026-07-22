@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from './api';
 import { useNavigate } from 'react-router-dom';
 
 function Products() {
@@ -8,73 +8,92 @@ function Products() {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
     
-
-    // 🎯 預設圖路徑 (可替換成你喜歡的 URL)
+    // 🎯 預設圖路徑
     const DEFAULT_IMAGE = '/default.png';
 
+    // 1. 載入購物車 (加上強防禦，沒 token 絕對不發請求)
     const fetchCart = async () => {
-        if (!token) return;
+        if (!token) {
+            console.log("ℹ️ 尚未登入，跳過購物車獲取");
+            return;
+        }
         try {
-            const res = await axios.get('http://localhost:8080/api/cart', {
+            const res = await api.get('http://localhost:8080/api/cart', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setCartItems(res.data);
         } catch (err) {
-            console.error("載入購物車失敗", err);
+            console.error("❌ 載入購物車失敗", err);
+            if (err.response?.status === 403 || err.response?.status === 401) {
+                console.log("Token 似乎失效了，引導去登入");
+            }
         }
     };
 
+    // 2. 抓取商品列表 (🎯 修正：既然後端鎖 403，我們就強制帶上 Token 闖關！)
     const fetchProducts = async () => {
         try {
-            const res = await axios.get('http://localhost:8080/api/products');
+            // 如果有 token 就帶上，沒有就不帶（相容後端未來開放免登入查看）
+            const config = token 
+                ? { headers: { Authorization: `Bearer ${token}` } } 
+                : {};
+
+            const res = await api.get('http://localhost:8080/api/products', config);
             setProducts(res.data);
         } catch (err) {
-            console.error("抓取商品失敗", err);
+            console.error("❌ 抓取商品失敗", err);
         }
     };
 
+    // 🎯 核心修正：確保拿到 Token 或確認狀態後再打 API，且只打一次
     useEffect(() => {
+        // 如果連 token 都沒有，直接防呆踢回登入，不讓他在這看 403
+        if (!token) {
+            alert("請先登入宗門！");
+            navigate('/login');
+            return;
+        }
+        
         fetchProducts();
         fetchCart();
-    }, []);
+    }, [token]); // 監聽 token 確保拿到才觸發
 
     const hasInactiveItem = cartItems.some(item => item.product?.active === false);
 
     const handleAddToCart = async (productId) => {
-        if (!token) { alert("請先登入！"); navigate('/login'); return; }
-        try {
-            await axios.post(`http://localhost:8080/api/cart/add?productId=${productId}&quantity=1`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            fetchCart();
-            // 使用 Bootstrap 的 Toast 或簡單 Alert
-            alert("成功加入修仙購物車！📜");
-        } catch (err) {
-            alert("庫存不足或系統錯誤");
-        }
-    };
+    if (!token) { alert("請先登入！"); navigate('/login'); return; }
+    try {
+        // 🎯 改為傳送 JSON 物件
+        await api.post('/cart/add', {
+            productId: productId,
+            quantity: 1
+        });
+        fetchCart();
+        alert("成功加入修仙購物車！📜");
+    } catch (err) {
+        alert("加入失敗");
+    }
+};
 
     const handleUpdateQty = async (productId, newQty) => {
-        if (newQty < 1) return;
-        try {
-            await axios.put(`http://localhost:8080/api/cart/update?productId=${productId}&quantity=${newQty}`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            fetchCart();
-        } catch (err) {
-            console.error("更新數量失敗", err);
-        }
+       if (newQty < 1) return;
+    try {
+        await api.put(`/cart/update?productId=${productId}&quantity=${newQty}`);
+        fetchCart();
+    } catch (err) {
+        console.error("更新數量失敗", err);
+    }
     };
 
     const handleRemoveItem = async (productId) => {
-        try {
-            await axios.delete(`http://localhost:8080/api/cart/remove/${productId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            fetchCart();
-        } catch (err) {
-            console.error("移除失敗", err);
-        }
+      try {
+        // 🎯 修正：使用相對路徑，讓 api 實例自動帶入 Token 與 baseURL
+        await api.delete(`/cart/remove/${productId}`);
+        fetchCart(); // 重新載入購物車
+    } catch (err) {
+        console.error("移除失敗", err);
+        alert("從購物車移除商品失敗");
+    }
     };
 
     const handleCheckout = async () => {
@@ -84,15 +103,17 @@ function Products() {
         }
         if (!window.confirm("確定要結帳並清空購物車嗎？")) return;
         try {
-            const res = await axios.post('http://localhost:8080/api/orders/checkout', {}, {
+            const res = await api.post('http://localhost:8080/api/orders/checkout', {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert(`結帳成功！訂單編號：${res.data.id}`);
             fetchCart();
-            // 結帳成功後關閉側邊欄 (如果有打開的話)
+            
             const offcanvasElement = document.getElementById('cartDrawer');
-            const busInstance = window.bootstrap.Offcanvas.getInstance(offcanvasElement);
-            if(busInstance) busInstance.hide();
+            if (offcanvasElement && window.bootstrap) {
+                const busInstance = window.bootstrap.Offcanvas.getInstance(offcanvasElement);
+                if(busInstance) busInstance.hide();
+            }
         } catch (err) {
             alert("結帳失敗：" + (err.response?.data || "伺服器錯誤"));
         }
@@ -100,9 +121,7 @@ function Products() {
 
     const handleLogout = () => {
         if (window.confirm("確定要登出嗎？")) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('nickname');
-            localStorage.removeItem('role');
+            localStorage.clear();
             alert("已安全登出！");
             navigate('/login');
         }
@@ -140,7 +159,6 @@ function Products() {
                     products.map(p => (
                         <div className="col-md-4 mb-4" key={p.id}>
                             <div className="card h-100 shadow-sm">
-                                {/* 🎯 圖片渲染防禦邏輯 */}
                                 <img 
                                     src={
                                         (p.imageUrl && typeof p.imageUrl === 'string' && p.imageUrl.trim() !== "")
@@ -177,13 +195,13 @@ function Products() {
                         </div>
                     ))
                 ) : (
-                    <div className="text-center py-5">
-                        <p className="text-muted">寶庫暫無任何法寶，請聯絡長老上架。</p>
+                    <div className="text-center py-5 w-100">
+                        <p className="text-muted">寶庫暫無任何法寶，請聯絡長老上架，或確認後端連線。</p>
                     </div>
                 )}
             </div>
 
-            {/* Offcanvas 側邊欄 (購物車) */}
+            {/* Offcanvas 側邊欄 */}
             <div className="offcanvas offcanvas-end" id="cartDrawer" tabIndex="-1" aria-labelledby="cartDrawerLabel">
                 <div className="offcanvas-header border-bottom bg-light">
                     <h5 className="offcanvas-title fw-bold" id="cartDrawerLabel">🛒 您的清單</h5>
@@ -223,7 +241,7 @@ function Products() {
                                                 disabled={!item.product?.active}>+</button>
                                         </div>
                                         <button className="btn btn-sm btn-outline-danger border-0" onClick={() => handleRemoveItem(item.product?.id)}>
-                                            <i className="bi bi-trash"></i> 🗑️
+                                            🗑️
                                         </button>
                                     </div>
                                 </div>
