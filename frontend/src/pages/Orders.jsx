@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from './api'; // 🎯 改用共用的 api 實例
 import { useNavigate } from 'react-router-dom';
 
 function Orders() {
   const [orders, setOrders] = useState([]);
-  const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     // 🛡️ 防護：沒 token 直接踢回登入
     if (!token) {
       navigate('/login');
@@ -16,10 +16,8 @@ function Orders() {
 
     const fetchOrders = async () => {
       try {
-        // 🎯 修正 1：路徑對齊後端的 @GetMapping("/my")
-        const res = await axios.get('http://localhost:8080/api/orders/my', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        // 🎯 自動帶入 baseURL 與 Token，不需要手動寫 headers
+        const res = await api.get('/api/orders/my');
         console.log("成功抓到訂單資料：", res.data);
         setOrders(res.data);
       } catch (err) {
@@ -31,7 +29,7 @@ function Orders() {
       }
     };
     fetchOrders();
-  }, [token, navigate]);
+  }, [navigate]);
 
   return (
     <div className="container mt-5">
@@ -64,7 +62,6 @@ function Orders() {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* 🎯 修正 2：對齊後端 Entity 的 items 欄位 */}
                   {order.items?.map(item => (
                     <tr key={item.id}>
                       <td className="fw-bold">{item.product?.name || '神祕法寶'}</td>

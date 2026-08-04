@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from './api'; // 🎯 改用共用的 api 實例
 import Swal from 'sweetalert2';
 
 function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '', description: '', imageUrl: '' });
   const [selectedFile, setSelectedFile] = useState(null);
-  const token = localStorage.getItem('token');
 
   // 1. 獲取商品清單
   const fetchProducts = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/products');
+      const res = await api.get('/api/products'); // 自動帶入雲端 baseURL
       setProducts(res.data);
     } catch (err) {
       console.error("獲取商品失敗", err);
@@ -22,7 +21,7 @@ function AdminProducts() {
     fetchProducts();
   }, []);
 
-  // 2. 核心修正：使用實測會通的路徑與 XHR 模式
+  // 2. 圖片上傳邏輯 (使用 XMLHttpRequest 配合雲端 IP)
   const handleFileUpload = async () => {
     if (!selectedFile) return null;
 
@@ -31,20 +30,17 @@ function AdminProducts() {
 
     return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
-      // 🎯 這裡使用「徹底放手路徑」法測試成功的 URL
-      xhr.open('POST', 'http://localhost:8080/api/test/upload');
-      
-      // 注意：這裡絕對不設定 Header，讓瀏覽器自動生成 Boundary
+      // 🎯 指向雲端 EC2 的上傳路徑
+      xhr.open('POST', 'http://54.238.208.83:8080/api/test/upload');
       
       xhr.onload = () => {
         if (xhr.status === 200 || xhr.status === 201) {
           let fileName = "";
           try {
             const data = JSON.parse(xhr.responseText);
-            // 根據 TestUploadController 回傳格式抓取檔名
             fileName = data.url || data; 
           } catch (e) {
-            fileName = xhr.responseText; // 如果回傳是純字串
+            fileName = xhr.responseText; 
           }
           console.log("✅ 圖片上傳成功，得到檔名:", fileName);
           resolve(fileName);
@@ -69,7 +65,6 @@ function AdminProducts() {
     try {
       let finalImageUrl = "";
 
-      // 如果有選檔案，先執行上傳
       if (selectedFile) {
         Swal.fire({ title: '上傳中...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         const uploadedFileName = await handleFileUpload();
@@ -90,21 +85,18 @@ function AdminProducts() {
         }
       }
 
-      // 🚀 將上傳拿到的檔名存入商品資料
       const productToSave = { 
         ...newProduct, 
         imageUrl: finalImageUrl 
       };
       
-      const res = await axios.post('http://localhost:8080/api/products', productToSave, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // 🎯 改用 api.post，會自動夾帶 Token，不需要手動寫 headers
+      const res = await api.post('/api/products', productToSave);
 
       if (res.status === 200 || res.status === 201) {
         Swal.fire("成功", "法寶已上架！", "success");
         setNewProduct({ name: '', price: '', stock: '', description: '', imageUrl: '' });
         setSelectedFile(null);
-        // 清空 file input 的顯示值
         const fileInput = document.getElementById('fileInput');
         if (fileInput) fileInput.value = "";
         fetchProducts();
@@ -115,7 +107,7 @@ function AdminProducts() {
     }
   };
 
-  // 4. 下架逻辑
+  // 4. 下架邏輯
   const handleDelete = async (id) => {
     const confirmDelete = await Swal.fire({
       title: "確定要毀滅此法寶嗎？",
@@ -128,9 +120,8 @@ function AdminProducts() {
     if (!confirmDelete.isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:8080/api/products/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // 🎯 改用 api.delete，自動夾帶 Token
+      await api.delete(`/api/products/${id}`);
       fetchProducts();
       Swal.fire("已毀滅", "該法寶已從煉丹房消失", "success");
     } catch (err) {
@@ -203,10 +194,10 @@ function AdminProducts() {
                 <td>
                   {p.imageUrl ? (
                     <img 
-                      // 🎯 這裡統一顯示路徑
+                      // 🎯 圖片顯示路徑改為雲端 EC2 的 IP
                       src={p.imageUrl.startsWith('http') 
                         ? p.imageUrl 
-                        : `http://localhost:8080/uploads/${p.imageUrl}`} 
+                        : `http://54.238.208.83:8080/uploads/${p.imageUrl}`} 
                       alt={p.name} 
                       style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
                       className="rounded border" 

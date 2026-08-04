@@ -38,21 +38,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 🎯 關鍵：一定要加這一行！
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        // 1. 完全公開區 (無需 Token)
-                        .requestMatchers("/api/auth/**", "/api/products/**", "/uploads/**").permitAll()
 
-                        // 2. 管理員專區 (必須擁有 ROLE_ADMIN)
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                        // 1. 同時支援帶有或不帶 /api 的路徑，避免路由不匹配
+                        .requestMatchers("/auth/**", "/api/auth/**", "/products/**", "/api/products/**", "/uploads/**").permitAll()
 
-                        // 3. 一般會員專區 (只要登入，有 Token 即可)
-                        // 將原本 permitAll 改為 authenticated()，確保 Token 被正確驗證
-                        .requestMatchers("/api/cart/**", "/api/orders/**", "/api/user/**").authenticated()
+                        // 2. 管理員專區（同時涵蓋 /admin/** 與 /api/admin/**）
+                        .requestMatchers("/admin/**", "/api/admin/**").hasAuthority("ROLE_ADMIN")
+
+                        // 3. 一般會員專區（同時涵蓋 /cart/** 與 /api/cart/** 等）
+                        .requestMatchers("/cart/**", "/api/cart/**", "/orders/**", "/api/orders/**", "/user/**", "/api/user/**").authenticated()
 
                         // 4. 其他所有路徑都需要認證
                         .anyRequest().authenticated()
@@ -65,13 +64,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 允許前端地址
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        // 允許的方法
+        // 允許本地與你的前端訪問來源（可視情況調整或直接用 setAllowedOriginPatterns 支援所有來源）
+        configuration.setAllowedOriginPatterns(List.of("*"));
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        // 允許的 Header
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
-        // 允許攜帶 Cookie 或認證資訊
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

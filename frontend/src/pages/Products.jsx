@@ -8,88 +8,69 @@ function Products() {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
     
-    // 🎯 預設圖路徑
     const DEFAULT_IMAGE = '/default.png';
 
-    // 1. 載入購物車 (加上強防禦，沒 token 絕對不發請求)
+    // 1. 載入購物車
     const fetchCart = async () => {
-        if (!token) {
-            console.log("ℹ️ 尚未登入，跳過購物車獲取");
-            return;
-        }
+        if (!token) return;
         try {
-            const res = await api.get('http://localhost:8080/api/cart', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/api/cart'); // 🎯 自動帶入 Token
             setCartItems(res.data);
         } catch (err) {
             console.error("❌ 載入購物車失敗", err);
-            if (err.response?.status === 403 || err.response?.status === 401) {
-                console.log("Token 似乎失效了，引導去登入");
-            }
         }
     };
 
-    // 2. 抓取商品列表 (🎯 修正：既然後端鎖 403，我們就強制帶上 Token 闖關！)
+    // 2. 抓取商品列表
     const fetchProducts = async () => {
         try {
-            // 如果有 token 就帶上，沒有就不帶（相容後端未來開放免登入查看）
-            const config = token 
-                ? { headers: { Authorization: `Bearer ${token}` } } 
-                : {};
-
-            const res = await api.get('http://localhost:8080/api/products', config);
+            const res = await api.get('/api/products'); // 🎯 自動帶入 Token 與雲端網址
             setProducts(res.data);
         } catch (err) {
             console.error("❌ 抓取商品失敗", err);
         }
     };
 
-    // 🎯 核心修正：確保拿到 Token 或確認狀態後再打 API，且只打一次
     useEffect(() => {
-        // 如果連 token 都沒有，直接防呆踢回登入，不讓他在這看 403
         if (!token) {
             alert("請先登入宗門！");
             navigate('/login');
             return;
         }
-        
         fetchProducts();
         fetchCart();
-    }, [token]); // 監聽 token 確保拿到才觸發
+    }, [token, navigate]);
 
     const hasInactiveItem = cartItems.some(item => item.product?.active === false);
 
     const handleAddToCart = async (productId) => {
-    if (!token) { alert("請先登入！"); navigate('/login'); return; }
-    try {
-        // 🎯 改為傳送 JSON 物件
-        await api.post('/cart/add', {
-            productId: productId,
-            quantity: 1
-        });
-        fetchCart();
-        alert("成功加入修仙購物車！📜");
-    } catch (err) {
-        alert("加入失敗");
-    }
-};
+        if (!token) { alert("請先登入！"); navigate('/login'); return; }
+        try {
+            await api.post('/api/cart/add', {
+                productId: productId,
+                quantity: 1
+            });
+            fetchCart();
+            alert("成功加入修仙購物車！📜");
+        } catch (err) {
+            alert("加入失敗");
+        }
+    };
 
     const handleUpdateQty = async (productId, newQty) => {
        if (newQty < 1) return;
-    try {
-        await api.put(`/cart/update?productId=${productId}&quantity=${newQty}`);
-        fetchCart();
-    } catch (err) {
-        console.error("更新數量失敗", err);
-    }
+        try {
+            await api.put(`/api/cart/update?productId=${productId}&quantity=${newQty}`);
+            fetchCart();
+        } catch (err) {
+            console.error("更新數量失敗", err);
+        }
     };
 
     const handleRemoveItem = async (productId) => {
       try {
-        // 🎯 修正：使用相對路徑，讓 api 實例自動帶入 Token 與 baseURL
-        await api.delete(`/cart/remove/${productId}`);
-        fetchCart(); // 重新載入購物車
+        await api.delete(`/api/cart/remove/${productId}`);
+        fetchCart();
     } catch (err) {
         console.error("移除失敗", err);
         alert("從購物車移除商品失敗");
@@ -103,9 +84,8 @@ function Products() {
         }
         if (!window.confirm("確定要結帳並清空購物車嗎？")) return;
         try {
-            const res = await api.post('http://localhost:8080/api/orders/checkout', {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            // 🎯 改用 api.post，自動帶入 Token
+            const res = await api.post('/api/orders/checkout', {});
             alert(`結帳成功！訂單編號：${res.data.id}`);
             fetchCart();
             
@@ -164,7 +144,7 @@ function Products() {
                                         (p.imageUrl && typeof p.imageUrl === 'string' && p.imageUrl.trim() !== "")
                                             ? (p.imageUrl.startsWith('http') 
                                                 ? p.imageUrl 
-                                                : `http://localhost:8080/uploads/${p.imageUrl}`)
+                                                : `http://54.238.208.83:8080/uploads/${p.imageUrl}`) // 🎯 圖片路徑指向雲端 IP
                                             : DEFAULT_IMAGE
                                     } 
                                     className="card-img-top" 

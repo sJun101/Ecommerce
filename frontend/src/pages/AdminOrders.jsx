@@ -9,7 +9,7 @@ function AdminOrders() {
 
   const fetchAllOrders = async () => {
     try {
-      const res = await api.get('/admin/orders');
+      const res = await api.get('api/admin/orders');
       setOrders(res.data);
     } catch (err) {
       console.error("取得全站訂單失敗", err);
@@ -29,7 +29,7 @@ function AdminOrders() {
 
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {
-      await api.put(`/admin/orders/${orderId}/status`, null, {
+      await api.put(`api/admin/orders/${orderId}/status`, null, {
         params: { status: newStatus }
       });
       Swal.fire({

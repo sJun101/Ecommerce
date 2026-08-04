@@ -65,7 +65,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             List<SimpleGrantedAuthority> authorities = List.of();
             if (role != null && !role.isEmpty()) {
                 // 確保權限格式以 ROLE_ 開頭，以便後端 hasRole 檢查 [4, 14, 15]
-                String authorityName = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+                String cleanRole = role.replace("ROLE_", "");
+                String authorityName = "ROLE_" + cleanRole;
                 authorities = List.of(new SimpleGrantedAuthority(authorityName));
             }
 

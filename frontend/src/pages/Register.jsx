@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from './api'; // 🎯 引入同目錄下的 api.js
 import { useNavigate, Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
@@ -14,8 +14,8 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      // 🎯 傳送包含 nickname 的資料到後端
-      await axios.post('http://localhost:8080/api/auth/register', formData);
+      // 🎯 改用 api.post，且網址只要寫後段路徑即可，會自動對應到雲端 IP
+      await api.post('/api/auth/register', formData);
       
       Swal.fire({
         icon: 'success',

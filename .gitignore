@@ -15,3 +15,7 @@ frontend/.env.local
 # 系統檔案
 .DS_Store
 Thumbs.db
+
+# 忽略 AWS 私密金鑰
+*.pem
+backend/*.pem
