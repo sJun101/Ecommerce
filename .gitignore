@@ -5,6 +5,7 @@ backend/.vscode/
 backend/*.iml
 backend/.gradle/
 backend/build/
+backend/app.jar
 
 # 前端 Node / JavaScript 關鍵過濾
 frontend/node_modules/
