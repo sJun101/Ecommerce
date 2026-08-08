@@ -90,13 +90,15 @@ spring.datasource.password=your_password
 ```
 啟動後端 (Spring Boot)：
 
-Bash
+```Bash
 cd backend
 mvn clean install
 mvn spring-boot:run
+```
 啟動前端 (React + Vite)：
-
+```
 Bash
 cd frontend
 npm install
 npm run dev
+```
