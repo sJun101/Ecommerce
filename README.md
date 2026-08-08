@@ -75,16 +75,19 @@
 ```bash
 cd backend
 docker build -t spring-boot-app .
-
-Bash
+```
+```Bash
 docker run -d -p 8080:8080 --name my-backend spring-boot-app
-方法二：傳統本地端開發模式
+```
+### 方法二：傳統本地端開發模式
+
 設定資料庫：於 backend/src/main/resources/application.properties 配置 MySQL 連線：
 
-Properties
+```Properties
 spring.datasource.url=jdbc:mysql://localhost:3306/your_database?useSSL=false&serverTimezone=UTC
 spring.datasource.username=your_username
 spring.datasource.password=your_password
+```
 啟動後端 (Spring Boot)：
 
 Bash
