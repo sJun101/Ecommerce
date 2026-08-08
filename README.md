@@ -64,6 +64,8 @@
     ├── src/                   # 頁面與組件
     └── package.json           # 依賴管理
 
+```
+
  ## 🚀 快速開始與執行指南 (Getting Started)
 
 方法一：使用 Docker 快速運行後端（推薦：模擬生產容器環境）
