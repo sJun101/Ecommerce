@@ -68,9 +68,10 @@
 
  ## 🚀 快速開始與執行指南 (Getting Started)
 
-方法一：使用 Docker 快速運行後端（推薦：模擬生產容器環境）
+### 方法一：使用 Docker 快速運行後端（推薦：模擬生產容器環境）
 
 進入後端資料夾並建立 Docker 映像檔：
+
 ```bash
 cd backend
 docker build -t spring-boot-app .
