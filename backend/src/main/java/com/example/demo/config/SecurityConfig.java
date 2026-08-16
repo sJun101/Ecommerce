@@ -45,7 +45,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
                         // 1. 同時支援帶有或不帶 /api 的路徑，避免路由不匹配
-                        .requestMatchers("/auth/**", "/api/auth/**", "/products/**", "/api/products/**", "/uploads/**").permitAll()
+                        .requestMatchers("/","/actuator/health","/auth/**", "/api/auth/**", "/products/**", "/api/products/**", "/uploads/**").permitAll()
 
                         // 2. 管理員專區（同時涵蓋 /admin/** 與 /api/admin/**）
                         .requestMatchers("/admin/**", "/api/admin/**").hasAuthority("ROLE_ADMIN")

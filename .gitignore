@@ -13,6 +13,16 @@ frontend/.pnpm-store/
 frontend/dist/
 frontend/.env.local
 
+# ☁️ Terraform 關鍵過濾（強烈建議加入！）
+# Terraform 關鍵過濾
+terraform-infra/.terraform/
+terraform-infra/*.tfstate
+terraform-infra/*.tfstate.*
+terraform-infra/crash.log
+terraform-infra/*.tfvars
+!terraform-infra/*.tfvars.example
+terraform-infra/.terraform.lock.hcl
+
 # 系統檔案
 .DS_Store
 Thumbs.db

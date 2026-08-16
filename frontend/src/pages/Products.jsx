@@ -10,21 +10,21 @@ function Products() {
     
     const DEFAULT_IMAGE = '/default.png';
 
-    // 1. 載入購物車
+    // 1. 載入購物車 (自動帶入 /api 前綴)
     const fetchCart = async () => {
         if (!token) return;
         try {
-            const res = await api.get('/api/cart'); // 🎯 自動帶入 Token
+            const res = await api.get('/cart'); 
             setCartItems(res.data);
         } catch (err) {
             console.error("❌ 載入購物車失敗", err);
         }
     };
 
-    // 2. 抓取商品列表
+    // 2. 抓取商品列表 (自動帶入 /api 前綴)
     const fetchProducts = async () => {
         try {
-            const res = await api.get('/api/products'); // 🎯 自動帶入 Token 與雲端網址
+            const res = await api.get('/products'); 
             setProducts(res.data);
         } catch (err) {
             console.error("❌ 抓取商品失敗", err);
@@ -46,7 +46,8 @@ function Products() {
     const handleAddToCart = async (productId) => {
         if (!token) { alert("請先登入！"); navigate('/login'); return; }
         try {
-            await api.post('/api/cart/add', {
+            // 🎯 修正：拿掉手動寫的 /api，改用純相對路徑
+            await api.post('/cart/add', {
                 productId: productId,
                 quantity: 1
             });
@@ -60,7 +61,8 @@ function Products() {
     const handleUpdateQty = async (productId, newQty) => {
        if (newQty < 1) return;
         try {
-            await api.put(`/api/cart/update?productId=${productId}&quantity=${newQty}`);
+            // 🎯 修正：拿掉手動寫的 /api
+            await api.put(`/cart/update?productId=${productId}&quantity=${newQty}`);
             fetchCart();
         } catch (err) {
             console.error("更新數量失敗", err);
@@ -69,7 +71,8 @@ function Products() {
 
     const handleRemoveItem = async (productId) => {
       try {
-        await api.delete(`/api/cart/remove/${productId}`);
+        // 🎯 修正：拿掉手動寫的 /api
+        await api.delete(`/cart/remove/${productId}`);
         fetchCart();
     } catch (err) {
         console.error("移除失敗", err);
@@ -84,8 +87,7 @@ function Products() {
         }
         if (!window.confirm("確定要結帳並清空購物車嗎？")) return;
         try {
-            // 🎯 改用 api.post，自動帶入 Token
-            const res = await api.post('/api/orders/checkout', {});
+            const res = await api.post('/orders/checkout', {});
             alert(`結帳成功！訂單編號：${res.data.id}`);
             fetchCart();
             
@@ -144,7 +146,7 @@ function Products() {
                                         (p.imageUrl && typeof p.imageUrl === 'string' && p.imageUrl.trim() !== "")
                                             ? (p.imageUrl.startsWith('http') 
                                                 ? p.imageUrl 
-                                                : `http://54.238.208.83:8080/uploads/${p.imageUrl}`) // 🎯 圖片路徑指向雲端 IP
+                                                : `http://54.238.208.83:8080/uploads/${p.imageUrl}`)
                                             : DEFAULT_IMAGE
                                     } 
                                     className="card-img-top" 

@@ -9,7 +9,7 @@ function AdminOrders() {
 
   const fetchAllOrders = async () => {
     try {
-      const res = await api.get('api/admin/orders');
+      const res = await api.get('/admin/orders');
       setOrders(res.data);
     } catch (err) {
       console.error("取得全站訂單失敗", err);

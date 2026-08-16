@@ -15,7 +15,7 @@ function Register() {
     e.preventDefault();
     try {
       // 🎯 改用 api.post，且網址只要寫後段路徑即可，會自動對應到雲端 IP
-      await api.post('/api/auth/register', formData);
+      await api.post('/auth/register', formData);
       
       Swal.fire({
         icon: 'success',

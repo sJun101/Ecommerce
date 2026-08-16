@@ -17,7 +17,7 @@ function Orders() {
     const fetchOrders = async () => {
       try {
         // 🎯 自動帶入 baseURL 與 Token，不需要手動寫 headers
-        const res = await api.get('/api/orders/my');
+        const res = await api.get('/orders/my');
         console.log("成功抓到訂單資料：", res.data);
         setOrders(res.data);
       } catch (err) {

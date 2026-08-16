@@ -29,9 +29,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String requestURI = request.getRequestURI();
-        if (requestURI.startsWith("/api/auth/")) {
+        if (requestURI.startsWith("/api/auth/") || requestURI.startsWith("/actuator/health")) {
             filterChain.doFilter(request, response);
-            return; // 這裡一定要 return，否則會繼續執行
+            return;
         }
         // 1. 攔截前端請求的 Header，看看有沒有攜帶通行證 [8, 9]
         final String authorizationHeader = request.getHeader("Authorization");

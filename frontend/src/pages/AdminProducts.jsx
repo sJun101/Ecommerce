@@ -10,7 +10,7 @@ function AdminProducts() {
   // 1. 獲取商品清單
   const fetchProducts = async () => {
     try {
-      const res = await api.get('/api/products'); // 自動帶入雲端 baseURL
+      const res = await api.get('/products'); // 自動帶入雲端 baseURL
       setProducts(res.data);
     } catch (err) {
       console.error("獲取商品失敗", err);
@@ -91,7 +91,7 @@ function AdminProducts() {
       };
       
       // 🎯 改用 api.post，會自動夾帶 Token，不需要手動寫 headers
-      const res = await api.post('/api/products', productToSave);
+      const res = await api.post('/products', productToSave);
 
       if (res.status === 200 || res.status === 201) {
         Swal.fire("成功", "法寶已上架！", "success");

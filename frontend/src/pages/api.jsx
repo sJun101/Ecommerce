@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 
 // 建立 Axios 實例，設定後端 base URL
 const api = axios.create({
-    baseURL: 'http://54.178.59.97:8080', 
+    baseURL: '/api', 
 });
 
 // 1. 請求攔截器：每次發送請求前，自動把 Token 塞進去
