@@ -10,7 +10,7 @@ function Products() {
     
     const DEFAULT_IMAGE = '/default.png';
 
-    // 1. 載入購物車 (自動帶入 /api 前綴)
+    // 1. 載入購物車
     const fetchCart = async () => {
         if (!token) return;
         try {
@@ -21,7 +21,7 @@ function Products() {
         }
     };
 
-    // 2. 抓取商品列表 (自動帶入 /api 前綴)
+    // 2. 抓取商品列表
     const fetchProducts = async () => {
         try {
             const res = await api.get('/products'); 
@@ -33,7 +33,7 @@ function Products() {
 
     useEffect(() => {
         if (!token) {
-            alert("請先登入宗門！");
+            alert("請先登入會員！");
             navigate('/login');
             return;
         }
@@ -46,13 +46,12 @@ function Products() {
     const handleAddToCart = async (productId) => {
         if (!token) { alert("請先登入！"); navigate('/login'); return; }
         try {
-            // 🎯 修正：拿掉手動寫的 /api，改用純相對路徑
             await api.post('/cart/add', {
                 productId: productId,
                 quantity: 1
             });
             fetchCart();
-            alert("成功加入修仙購物車！📜");
+            alert("成功加入購物車！");
         } catch (err) {
             alert("加入失敗");
         }
@@ -61,7 +60,6 @@ function Products() {
     const handleUpdateQty = async (productId, newQty) => {
        if (newQty < 1) return;
         try {
-            // 🎯 修正：拿掉手動寫的 /api
             await api.put(`/cart/update?productId=${productId}&quantity=${newQty}`);
             fetchCart();
         } catch (err) {
@@ -71,7 +69,6 @@ function Products() {
 
     const handleRemoveItem = async (productId) => {
       try {
-        // 🎯 修正：拿掉手動寫的 /api
         await api.delete(`/cart/remove/${productId}`);
         fetchCart();
     } catch (err) {
@@ -82,7 +79,7 @@ function Products() {
 
     const handleCheckout = async () => {
         if (hasInactiveItem) {
-            alert("請先移除下架商品再結帳");
+            alert("請先移除已下架商品再結帳");
             return;
         }
         if (!window.confirm("確定要結帳並清空購物車嗎？")) return;
@@ -114,18 +111,18 @@ function Products() {
             {/* 頂部標題區 */}
             <div className="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
                 <div>
-                    <h2 className="fw-bold text-primary mb-0">✨ 修仙寶庫 ✨</h2>
-                    <small className="text-muted">道友，歡迎回來修煉</small>
+                    <h2 className="fw-bold text-primary mb-0">✨ 商品列表 ✨</h2>
+                    <small className="text-muted">歡迎選購您喜愛的商品</small>
                 </div>
                 <div className="d-flex align-items-center gap-3">
                     <button className="btn btn-link text-decoration-none text-dark fw-bold" onClick={() => navigate('/orders')}>
                         📜 我的訂單
                     </button>
                     <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>
-                        安全登出
+                        登出
                     </button>
                     <button className="btn btn-dark position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartDrawer">
-                        🛒 我的購物車
+                        🛒 購物車
                         {cartItems.length > 0 && (
                             <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
@@ -160,7 +157,7 @@ function Products() {
                                 <div className="card-body d-flex flex-column">
                                     <h5 className="card-title fw-bold text-dark">{p.name}</h5>
                                     <p className="card-text text-muted flex-grow-1" style={{ fontSize: '0.9rem' }}>
-                                        {p.description || "這件法寶很神祕，沒有留下描述。"}
+                                        {p.description || "暫無商品描述。"}
                                     </p>
                                     <div className="d-flex justify-content-between align-items-center mt-3">
                                         <span className="text-danger fw-bold fs-5">${p.price}</span>
@@ -178,7 +175,7 @@ function Products() {
                     ))
                 ) : (
                     <div className="text-center py-5 w-100">
-                        <p className="text-muted">寶庫暫無任何法寶，請聯絡長老上架，或確認後端連線。</p>
+                        <p className="text-muted">目前沒有上架商品，請稍後再試或確認後端連線。</p>
                     </div>
                 )}
             </div>
@@ -186,14 +183,14 @@ function Products() {
             {/* Offcanvas 側邊欄 */}
             <div className="offcanvas offcanvas-end" id="cartDrawer" tabIndex="-1" aria-labelledby="cartDrawerLabel">
                 <div className="offcanvas-header border-bottom bg-light">
-                    <h5 className="offcanvas-title fw-bold" id="cartDrawerLabel">🛒 您的清單</h5>
+                    <h5 className="offcanvas-title fw-bold" id="cartDrawerLabel">🛒 您的購物車</h5>
                     <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div className="offcanvas-body">
                     {cartItems.length === 0 ? (
                         <div className="text-center mt-5">
-                            <div className="fs-1 mb-3">🎐</div>
-                            <p className="text-muted">目前清單空空如也...</p>
+                            <div className="fs-1 mb-3">🛒</div>
+                            <p className="text-muted">購物車目前是空的...</p>
                         </div>
                     ) : (
                         <>
@@ -205,7 +202,7 @@ function Products() {
                                 >
                                     <div style={{ flex: 1 }}>
                                         <div className="fw-bold text-truncate" style={{ maxWidth: '160px' }}>
-                                            {item.product?.name || "未知法寶"}
+                                            {item.product?.name || "未知商品"}
                                             {!item.product?.active && <span className="badge bg-warning text-dark ms-2" style={{fontSize: '0.7rem'}}>已下架</span>}
                                         </div>
                                         <small className={item.product?.active ? "text-primary fw-bold" : "text-decoration-line-through text-muted"}>
@@ -232,7 +229,7 @@ function Products() {
                             <div className="mt-4 p-3 bg-light rounded">
                                 {hasInactiveItem && (
                                     <div className="alert alert-warning py-2 mb-3" style={{ fontSize: '0.85rem' }}>
-                                        ⚠️ 內含已下架法寶，請移除後再行結帳。
+                                        ⚠️ 包含已下架商品，請移除後再進行結帳。
                                     </div>
                                 )}
                                 <div className="d-flex justify-content-between align-items-center mb-3">
@@ -246,7 +243,7 @@ function Products() {
                                     onClick={handleCheckout}
                                     disabled={hasInactiveItem}
                                 >
-                                    {hasInactiveItem ? "請清理清單" : "💰 立即結帳"}
+                                    {hasInactiveItem ? "請清理購物車" : "💰 立即結帳"}
                                 </button>
                             </div>
                         </>
