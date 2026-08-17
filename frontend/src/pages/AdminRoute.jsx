@@ -18,11 +18,10 @@ const AdminRoute = ({ children }) => {
     };
 
     const role = getRole();
-    console.log("🛡️ 當前門衛檢查身分勳章為:", role);
+    console.log("🛡️ 當前權限檢查身分為:", role);
 
-    // 🎯 測試小撇步：如果你的後端還沒做 role，這裡可以先暫時改成： if(!token)
     if (role !== 'ROLE_ADMIN') {
-        alert("⚠️ 權限不足！只有管理員（煉丹長老）能進入此地。");
+        alert("⚠️ 權限不足！只有管理員能進入此頁面。");
         return <Navigate to="/products" />;
     }
 
