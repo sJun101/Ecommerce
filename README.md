@@ -1,4 +1,4 @@
-# 🛒 E-Commerce Cloud Full-Stack Application (企業級雲端全端電商平台)
+# 🛒 E-Commerce Cloud Full-Stack Application (雲端全端電商平台)
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-18.x-blue.svg)](https://react.dev/)
