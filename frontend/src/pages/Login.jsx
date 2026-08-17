@@ -68,7 +68,7 @@ function Login() {
         <div className="col-md-4">
           <div className="card shadow-lg border-0">
             <div className="card-body p-4">
-              <h3 className="text-center mb-4 fw-bold text-primary">✨ 電商系統 ✨</h3>
+              <h3 className="text-center mb-4 fw-bold text-primary">✨ 電商系統 </h3>
               <form onSubmit={handleLogin}>
                 <div className="mb-3">
                   <label className="form-label fw-bold">帳號 (道號)</label>

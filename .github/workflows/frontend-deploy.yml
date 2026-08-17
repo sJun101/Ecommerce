@@ -3,8 +3,8 @@ name: Deploy Frontend
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - 'frontend/**' # 只有當 frontend 資料夾有異動時才觸發
+    #paths:
+     # - 'frontend/**' # 只有當 frontend 資料夾有異動時才觸發
 
 jobs:
   deploy:
