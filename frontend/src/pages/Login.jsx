@@ -16,9 +16,6 @@ function Login() {
         password
       });
 
-      console.log("🚀 登入成功回應原始資料：", res.data);
-
-      // 🎯 自動相容性判定：管你後端回傳物件還是字串，通通抓出 Token！
       let token = "";
       let nickname = username;
 
@@ -33,27 +30,23 @@ function Login() {
       if (token && token.startsWith('eyJ')) {
         localStorage.setItem('token', token);
         localStorage.setItem('nickname', nickname);
-        
-        console.log("✅ Token 已成功寫入本地儲存區");
 
         Swal.fire({
           icon: 'success',
-          title: '歡迎回來！',
-          text: `尊貴的道友 ${nickname}，歡迎回到修仙寶庫`,
+          title: '登入成功',
+          text: `歡迎回來，${nickname}！`,
           timer: 1300,
           showConfirmButton: false
         }).then(() => {
-          console.log("🎬 彈窗關閉，強制帶路跳轉！");
-          // 🎯 這裡改用 window.location.href 強制突圍，防止 React 路由卡死
           window.location.href = '/products';
         });
 
       } else {
-        throw new Error("通行證格式不符合 JWT 規範，請檢查後端發行端");
+        throw new Error("Token 格式不符合規範");
       }
     } catch (err) {
-      console.error("❌ 登入發生錯誤：", err);
-      const errorMsg = err.response?.data || "登入失敗，請檢查道號與真言";
+      console.error("登入發生錯誤：", err);
+      const errorMsg = err.response?.data || "登入失敗，請檢查帳號與密碼";
       Swal.fire({
         icon: 'error',
         title: '登入失敗',
@@ -68,10 +61,10 @@ function Login() {
         <div className="col-md-4">
           <div className="card shadow-lg border-0">
             <div className="card-body p-4">
-              <h3 className="text-center mb-4 fw-bold text-primary">✨ 電商系統 </h3>
+              <h3 className="text-center mb-4 fw-bold text-primary">會員登入</h3>
               <form onSubmit={handleLogin}>
                 <div className="mb-3">
-                  <label className="form-label fw-bold">帳號 (道號)</label>
+                  <label className="form-label fw-bold">帳號</label>
                   <input 
                     type="text" 
                     className="form-control" 
@@ -82,7 +75,7 @@ function Login() {
                   />
                 </div>
                 <div className="mb-3">
-                  <label className="form-label fw-bold">密碼 (真言)</label>
+                  <label className="form-label fw-bold">密碼</label>
                   <input 
                     type="password" 
                     className="form-control" 
@@ -93,14 +86,14 @@ function Login() {
                   />
                 </div>
                 <button type="submit" className="btn btn-primary w-100 fw-bold py-2 mt-2">
-                  進入寶庫
+                  登入
                 </button>
               </form>
 
               <div className="text-center mt-4 border-top pt-3">
-                <p className="text-muted small mb-0">還沒入門嗎？</p>
+                <p className="text-muted small mb-0">還沒有帳號嗎？</p>
                 <Link to="/register" className="text-decoration-none fw-bold text-success">
-                  立即註冊帳號
+                  立即註冊
                 </Link>
               </div>
             </div>
