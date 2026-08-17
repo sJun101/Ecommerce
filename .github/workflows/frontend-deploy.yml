@@ -38,5 +38,8 @@ jobs:
 
     - name: Deploy to S3
       run: |
-        aws s3 sync dist/ s3://my-ecommerce-frontend-s3-787107040336-ap-northeast-1-an --delete
-        # 如果你的打包資料夾是 build，請把 dist/ 改成 build/
+        aws s3 sync dist/ s3://ecommerce-frontend-dist-ap-northeast-1 --delete
+
+    - name: Invalidate CloudFront Cache
+      run: |
+        aws cloudfront create-invalidation --distribution-id E91L9MGXK33DQ --paths "/*"
