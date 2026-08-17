@@ -12,7 +12,7 @@ const AdminRoute = ({ children }) => {
             const payload = JSON.parse(atob(sections[1]));
             return payload.role;
         } catch (e) {
-            console.error("解析 Token 身分失敗:", e);
+            console.error("解析  Token 身分失敗:", e);
             return null;
         }
     };
