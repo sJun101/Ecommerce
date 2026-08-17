@@ -123,8 +123,7 @@ mvn clean install
 mvn spring-boot:run
 ```
 啟動前端 (React + Vite)：
-```
-Bash
+```Bash
 cd frontend
 npm install
 npm run dev
