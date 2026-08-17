@@ -58,18 +58,29 @@
 ├── .github/workflows/         # GitHub Actions CI/CD 自動化腳本
 │   ├── deploy-backend.yml     # 後端自動化建置與 ECS 部署
 │   └── deploy-frontend.yml    # 前端自動化打包與 S3 同步
-├── terraform/                 # IaC 雲端基礎設施設定
-│   └── main.tf                # AWS VPC, ECS, ECR, RDS, S3 宣告
+├── terraform-infra/           # IaC 雲端基礎設施（模組化架構）
+│   ├── alb_ecs.tf             # 應用負載平衡器與 ECS Fargate 服務
+│   ├── cloudwatch.tf          # 雲端日誌與監控
+│   ├── ecr.tf                 # Docker 映像檔倉庫
+│   ├── network.tf             # VPC、子網路與網路路由
+│   ├── provider.tf            # AWS Provider 設定
+│   ├── rds.tf                 # RDS 關聯式資料庫設定
+│   ├── s3_cloudfront.tf       # S3 物件儲存與 CDN 分發
+│   ├── security_groups.tf     # 安全群組與防火牆規則
+│   └── variables.tf           # 參數變數定義
 ├── backend/                   # Spring Boot 後端專案
 │   ├── src/main/java/com/example/demo/
-│   │   ├── config/            # SecurityConfig, JwtRequestFilter
-│   │   ├── exception/         # GlobalExceptionHandler
-│   │   ├── service/           # CartServiceImpl 商業邏輯
-│   │   └── ...
+│   │   ├── config/            # Security 6 與 JWT 驗證設定
+│   │   ├── exception/         # @RestControllerAdvice 全域例外處理
+│   │   ├── service/           # 購物車與核心商業邏輯層
+│   │   └── ...                # Controller, Entity, Repository 等
 │   └── Dockerfile             # 後端容器化設定
 └── frontend/                  # React + Vite 前端專案
-    ├── src/                   # 頁面與組件
-    └── package.json           # 依賴管理
+    ├── src/                   # 原始碼目錄
+    │   ├── components/        # Navbar 與共用組件
+    │   ├── pages/             # 頁面路由 (商品列表、購物車、後台管理)
+    │   └── ...                # App.jsx, main.jsx 等
+    └── package.json           # 依賴管理與腳本配置
 ```
 
  ## 🚀 快速開始與執行指南 (Getting Started)
