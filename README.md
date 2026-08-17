@@ -104,8 +104,6 @@
 ```bash
 cd backend
 docker build -t spring-boot-app .
-```
-```Bash
 docker run -d -p 8080:8080 --name my-backend spring-boot-app
 ```
 ### 方法二：傳統本地端開發模式
@@ -131,3 +129,5 @@ cd frontend
 npm install
 npm run dev
 ```
+
+
