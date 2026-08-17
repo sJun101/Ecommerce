@@ -98,7 +98,7 @@
  ```properties
  # 如果是 Windows/Mac，請使用 host.docker.internal
  spring.datasource.url=jdbc:mysql://host.docker.internal:3306/your_database?useSSL=false&serverTimezone=UTC
-
+ ```
 進入後端資料夾並建立 Docker 映像檔：
 
 ```bash
