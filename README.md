@@ -83,7 +83,16 @@
     └── package.json           # 依賴管理與腳本配置
 ```
 
- ## 🚀 快速開始與執行指南 (Getting Started)
+## 🚀 快速開始與執行指南 (Getting Started)
+
+### 前置準備 (Prerequisites)
+在開始之前，請確保您的環境已安裝：
+* Java 17+
+* Maven 3.x
+* Node.js 18+
+* MySQL 8.0+ (請先在 MySQL 中建立好對應的資料庫)
+
+---
 
 ### 方法一：使用 Docker 快速運行後端（推薦：模擬生產容器環境）
 
