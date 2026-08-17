@@ -34,15 +34,15 @@ function Orders() {
   return (
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fw-bold text-primary">📜 我的修仙紀錄</h2>
+        <h2 className="fw-bold text-primary">📦 我的訂單紀錄</h2>
         <button className="btn btn-outline-secondary" onClick={() => navigate('/products')}>
-          返回寶庫
+          返回商品列表
         </button>
       </div>
       
       {orders.length === 0 ? (
         <div className="alert alert-light text-center border shadow-sm">
-          <p className="mb-0 text-muted">目前尚無任何紀錄，道友請先前往寶庫採購。📜</p>
+          <p className="mb-0 text-muted">目前尚無任何訂單紀錄，請先前往商店選購商品。🛒</p>
         </div>
       ) : (
         orders.map(order => (
@@ -55,7 +55,7 @@ function Orders() {
               <table className="table table-sm table-hover">
                 <thead className="table-light">
                   <tr>
-                    <th>法寶名稱</th>
+                    <th>商品名稱</th>
                     <th className="text-center">單價</th>
                     <th className="text-center">數量</th>
                     <th className="text-end">小計</th>
@@ -64,7 +64,7 @@ function Orders() {
                 <tbody>
                   {order.items?.map(item => (
                     <tr key={item.id}>
-                      <td className="fw-bold">{item.product?.name || '神祕法寶'}</td>
+                      <td className="fw-bold">{item.product?.name || '未知商品'}</td>
                       <td className="text-center">${item.price}</td>
                       <td className="text-center">{item.quantity}</td>
                       <td className="text-end">${(item.price * item.quantity).toFixed(2)}</td>
