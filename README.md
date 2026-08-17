@@ -94,7 +94,11 @@
 
 ---
 
-### 方法一：使用 Docker 快速運行後端（推薦：模擬生產容器環境）
+1. **配置資料庫連線：** 
+   若使用 Docker 運行後端，請確保 `backend/src/main/resources/application.properties` 中的 DB URL 指向您的主機（而非容器內部）：
+   ```properties
+   # 如果是 Windows/Mac，請使用 host.docker.internal
+   spring.datasource.url=jdbc:mysql://host.docker.internal:3306/your_database?useSSL=false&serverTimezone=UTC
 
 進入後端資料夾並建立 Docker 映像檔：
 
