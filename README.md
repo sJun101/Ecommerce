@@ -10,7 +10,9 @@
 
 一個結合現代化前端、強固後端以及完整 DevOps 雲端自動化架構的企業級全端電商平台專案。本專案採前後端分離設計，後端部署於 AWS ECS Fargate 容器服務，前端託管於 AWS S3，並全面實踐 IaC (Infrastructure as Code) 與自動化 CI/CD 交付流程。
 
-<img src="./assets/architecture.jpg" width="500">
+<p align="center">
+  <img src="./assets/architecture.jpg" width="500">
+</p>
 
 ---
 
