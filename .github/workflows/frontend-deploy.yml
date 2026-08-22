@@ -42,7 +42,8 @@ jobs:
 
     - name: Invalidate CloudFront Cache
       run: |
-        DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?tags.Name=='ecommerce-cloudfront'].Id | [0]" --output text)
+        # 直接取得 CloudFront 清單中的第一個 ID
+        DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[0].Id" --output text)
         
         if [ "$DIST_ID" = "None" ] || [ -z "$DIST_ID" ]; then
           echo "Error: Could not find CloudFront distribution."
