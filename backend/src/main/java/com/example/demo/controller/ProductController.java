@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Product;
 import com.example.demo.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public String deleteProduct(@PathVariable Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("找不到商品 ID: " + id));

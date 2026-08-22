@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import api from './api'; 
 import Swal from 'sweetalert2';
 
+// 取得 API 基礎路徑（支援 Vite 環境變數，若未設定則走相對路徑由反向代理轉發）
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
 function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '', description: '', imageUrl: '' });
   const [selectedFile, setSelectedFile] = useState(null);
 
-  
+  // 1. 取得商品列表
   const fetchProducts = async () => {
     try {
       const res = await api.get('/products'); 
@@ -21,41 +24,27 @@ function AdminProducts() {
     fetchProducts();
   }, []);
 
-  
+  // 2. 圖片上傳邏輯（改用統一的 api instance，自動帶入 Token）
   const handleFileUpload = async () => {
     if (!selectedFile) return null;
 
     const formData = new FormData();
     formData.append('file', selectedFile);
 
-    return new Promise((resolve) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'http://54.238.208.83:8080/api/test/upload');
+    try {
+      const res = await api.post('/test/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       
-      xhr.onload = () => {
-        if (xhr.status === 200 || xhr.status === 201) {
-          let fileName = "";
-          try {
-            const data = JSON.parse(xhr.responseText);
-            fileName = data.url || data; 
-          } catch (e) {
-            fileName = xhr.responseText; 
-          }
-          console.log("✅ 圖片上傳成功，得到檔名:", fileName);
-          resolve(fileName);
-        } else {
-          console.error("❌ 圖片上傳失敗，狀態碼:", xhr.status);
-          resolve(null);
-        }
-      };
-
-      xhr.onerror = () => {
-        console.error("❌ 網路連線錯誤，無法上傳");
-        resolve(null);
-      };
-
-      xhr.send(formData);
-    });
+      const fileName = res.data.url || res.data;
+      console.log("✅ 圖片上傳成功，得到檔名:", fileName);
+      return fileName;
+    } catch (err) {
+      console.error("❌ 圖片上傳失敗", err);
+      return null;
+    }
   };
 
   // 3. 新增商品邏輯
@@ -89,7 +78,6 @@ function AdminProducts() {
         imageUrl: finalImageUrl 
       };
       
-      
       const res = await api.post('/products', productToSave);
 
       if (res.status === 200 || res.status === 201) {
@@ -102,7 +90,7 @@ function AdminProducts() {
       }
     } catch (err) {
       console.error("❌ 商品存檔失敗:", err);
-      Swal.fire("失敗", "商品存檔失敗，請確認後端是否運作", "error");
+      Swal.fire("失敗", "商品存檔失敗，請確認權限或後端是否運作", "error");
     }
   };
 
@@ -119,8 +107,8 @@ function AdminProducts() {
     if (!confirmDelete.isConfirmed) return;
 
     try {
-      // 🎯 改用 api.delete，自動夾帶 Token
-      await api.delete(`/api/products/${id}`);
+      // 統一路由格式，避免路徑重複
+      await api.delete(`/products/${id}`);
       fetchProducts();
       Swal.fire("已下架", "該商品已下架", "success");
     } catch (err) {
@@ -130,11 +118,11 @@ function AdminProducts() {
 
   return (
     <div className="container mt-4">
-      <h2 className="fw-bold text-danger mb-4">(管理員面板)</h2>
+      <h2 className="fw-bold text-danger mb-4">管理員面板</h2>
 
       {/* 上架表單 */}
       <div className="card shadow-sm border-0 mb-5">
-        <div className="card-header bg-primary text-white fw-bold">✨ 上架新商品</div>
+        <div className="card-header bg-primary text-white fw-bold">上架新商品</div>
         <div className="card-body">
           <form onSubmit={handleAddProduct} className="row g-3">
             <div className="col-md-4">
@@ -143,7 +131,7 @@ function AdminProducts() {
                 value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} required />
             </div>
             <div className="col-md-4">
-              <label className="form-label small fw-bold">價格 </label>
+              <label className="form-label small fw-bold">價格</label>
               <input type="number" className="form-control" 
                 value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} required />
             </div>
@@ -159,7 +147,6 @@ function AdminProducts() {
                 onChange={e => {
                   const file = e.target.files[0];
                   if (file) {
-                    console.log("📂 已選取檔案:", file.name);
                     setSelectedFile(file);
                   }
                 }} />
@@ -173,7 +160,7 @@ function AdminProducts() {
       </div>
 
       {/* 庫存列表 */}
-      <h4 className="mb-3 fw-bold text-secondary">📊 現有商品清單</h4>
+      <h4 className="mb-3 fw-bold text-secondary">現有商品清單</h4>
       <div className="table-responsive shadow-sm rounded">
         <table className="table table-hover align-middle bg-white mb-0">
           <thead className="table-dark">
@@ -195,7 +182,7 @@ function AdminProducts() {
                     <img 
                       src={p.imageUrl.startsWith('http') 
                         ? p.imageUrl 
-                        : `http://54.238.208.83:8080/uploads/${p.imageUrl}`} 
+                        : `${API_BASE_URL}/uploads/${p.imageUrl}`} 
                       alt={p.name} 
                       style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
                       className="rounded border" 
