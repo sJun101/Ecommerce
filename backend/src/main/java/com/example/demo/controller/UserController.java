@@ -16,14 +16,12 @@ public class UserController {
     private final UserService userService;
     public UserController(UserService userService) { this.userService = userService; }
 
-    // 取得當前登入者的資訊 (前端呼叫 GET /api/users/me)
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getMyInfo(Principal principal) {
         User user = userService.findByUsername(principal.getName());
         return ResponseEntity.ok(UserDTO.fromEntity(user));
     }
 
-    // 查詢特定使用者 (僅限管理員)
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/{username}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String username) {

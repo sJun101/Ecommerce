@@ -26,7 +26,6 @@ function Login() {
         nickname = res.data.nickname || res.data.username || username;
       }
 
-      // 驗證 Token 是否有效
       if (token && token.startsWith('eyJ')) {
         localStorage.setItem('token', token);
         localStorage.setItem('nickname', nickname);

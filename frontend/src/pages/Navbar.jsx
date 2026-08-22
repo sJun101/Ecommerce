@@ -19,17 +19,15 @@ function Navbar() {
         setRole(null);
       }
     }
-  }, []); // 空陣列代表只在組件掛載時執行
+  }, []); 
 
-  // 登出時順便清除狀態
   const handleLogout = () => {
     if (window.confirm("確定要登出系統嗎？")) {
-      localStorage.clear(); // 直接清除所有相關資料
-      window.location.href = '/login'; // 強制轉址
+      localStorage.clear(); 
+      window.location.href = '/login'; 
     }
   };
 
-  // 隱藏 Navbar 的判斷
   const token = localStorage.getItem('token');
   if (!token) return null;
 

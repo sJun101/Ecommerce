@@ -7,7 +7,6 @@ import AdminProducts from './pages/AdminProducts';
 import Register from './pages/Register';
 import AdminOrders from './pages/AdminOrders';
 
-// 🎯 1. 建立內建的 AdminRoute 門衛組件
 const AdminRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   
@@ -15,7 +14,7 @@ const AdminRoute = ({ children }) => {
     if (!t) return null;
     try {
       const payload = JSON.parse(window.atob(t.split('.')[1]));
-      return payload.role; // 對應 Java 裡的 .claim("role", user.getRole())
+      return payload.role; 
     } catch (e) {
       return null;
     }
@@ -24,7 +23,7 @@ const AdminRoute = ({ children }) => {
   const role = getRoleFromToken(token);
 
   if (role !== 'ROLE_ADMIN') {
-    alert("⚠️ 權限不足！只有煉丹長老能進入。");
+    alert("⚠️ 權限不足！只有管理員能進入。");
     return <Navigate to="/products" />;
   }
 
@@ -42,7 +41,6 @@ function App() {
         <Route path="/register" element={<Register />} />
         
         
-        {/* 🎯 2. 修正後的 Admin 路由：只留這一個，並用 AdminRoute 包起來 */}
         <Route 
           path="/admin" 
           element={
@@ -62,7 +60,7 @@ function App() {
         />
 
         <Route path="/" element={<Navigate to="/login" />} />
-        {/* 🎯 3. 注意：防呆路徑要放在最後面 */}
+        {/*防呆路徑要放在最後面 */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

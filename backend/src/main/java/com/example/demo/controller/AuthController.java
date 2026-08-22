@@ -19,24 +19,24 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
-    @Autowired private JwtUtils jwtUtils; // 引入剛剛寫的製卡機
+    @Autowired private JwtUtils jwtUtils;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        // 1. 驗證帳密
+
         User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
-        // 2. 製作通行證 (現在帶入 user.getRole())
+
         String token = jwtUtils.generateToken(user.getUsername(), user.getRole());
 
-        // 3. 回傳結構化 JSON，而不是單純的 String
+
         return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
-        // 假設你的 UserService 已經有 register 方法
-        // 這邊建議把 user 的 role 預設設為 'USER'
+
+
         userService.register(user);
         return ResponseEntity.ok(Collections.singletonMap("message", "註冊成功！"));
     }

@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserRepository userRepository; // 改用 Autowired，不要用建構子
+    private UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder; // 讓 Spring 注入這個 Bean
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public User register(User user) {

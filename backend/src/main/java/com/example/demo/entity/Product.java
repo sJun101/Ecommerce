@@ -1,4 +1,4 @@
-package com.example.demo.entity; // 檢查這行是否正確
+package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.property.access.spi.Setter;
@@ -18,10 +18,10 @@ public class Product {
     private Integer stock;
     private Boolean active = true;
 
-    // 空的建構子 (JPA 必備)
+
     public Product() {}
 
-    // Getter & Setter (按 Alt + Insert 生成)
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }

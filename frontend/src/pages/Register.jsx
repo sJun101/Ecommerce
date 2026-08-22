@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from './api'; // 🎯 引入同目錄下的 api.js
+import api from './api'; 
 import { useNavigate, Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
@@ -14,7 +14,6 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      // 🎯 改用 api.post，且網址只要寫後段路徑即可，會自動對應到雲端 IP
       await api.post('/auth/register', formData);
       
       Swal.fire({
@@ -78,7 +77,7 @@ function Register() {
               </form>
               <div className="text-center mt-3">
                 <Link to="/login" className="text-decoration-none text-muted">
-                  已有道號？點此登入
+                  已有帳號？點此登入
                 </Link>
               </div>
             </div>

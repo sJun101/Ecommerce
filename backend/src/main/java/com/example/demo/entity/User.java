@@ -17,7 +17,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    // 💡 補上角色欄位，預設可以給 "USER"
+
     @Column(nullable = false)
     private String role = "USER";
 
@@ -29,10 +29,9 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-    // ===== Constructor =====
+
     public User() {}
 
-    // ===== Getter & Setter =====
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -42,7 +41,6 @@ public class User {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    // 🎯 補完 getRole 與 setRole
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 

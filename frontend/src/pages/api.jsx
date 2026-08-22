@@ -29,7 +29,7 @@ api.interceptors.response.use(
             Swal.fire('權限不足', '您沒有權限執行此操作。', 'error');
         } else if (status === 401) {
             Swal.fire('登入逾期', '請重新登入以繼續。', 'warning');
-            localStorage.removeItem('token'); // 清除過期 token
+            localStorage.removeItem('token'); 
             window.location.href = '/login';
         } else {
             Swal.fire('發生錯誤', message, 'error');

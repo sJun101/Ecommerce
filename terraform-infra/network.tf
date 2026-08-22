@@ -83,23 +83,23 @@ resource "aws_route_table_association" "pub_2" {
   route_table_id = aws_route_table.public.id
 }
 
-# 1. 建立彈性 IP (給 NAT Gateway 用)
+# 彈性 IP 
 resource "aws_eip" "nat" {
   domain = "vpc"
   tags   = { Name = "${var.project_name}-nat-eip" }
 }
 
-# 2. 建立 NAT Gateway (放在 Public Subnet，讓 Private Subnet 能連外網)
+# NAT Gateway 
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public_1.id
   tags          = { Name = "${var.project_name}-nat-gw" }
 
-  # 確保 Internet Gateway 已經建立完成
+  
   depends_on = [aws_internet_gateway.gw]
 }
 
-# 3. 建立私有子網路專用的路由表 (指向 NAT Gateway)
+# 私有子網路專用的路由表 
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
   route {
@@ -109,7 +109,7 @@ resource "aws_route_table" "private" {
   tags = { Name = "${var.project_name}-private-rt" }
 }
 
-# 4. 將私有子網路綁定到新的路由表
+#  將私有子網路綁定到新的路由表
 resource "aws_route_table_association" "priv_1" {
   subnet_id      = aws_subnet.private_1.id
   route_table_id = aws_route_table.private.id

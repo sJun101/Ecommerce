@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class CartServiceImpl implements CartService { // 加上實作介面
+public class CartServiceImpl implements CartService {
 
     @Autowired
     private CartRepository cartRepository;
@@ -17,7 +17,7 @@ public class CartServiceImpl implements CartService { // 加上實作介面
     @Autowired
     private ProductRepository productRepository;
 
-    @Override // 標註重寫介面方法
+    @Override
     @Transactional
     public void addToCart(String username, Long productId, Integer quantity) {
         var existingItem = cartRepository.findByUsernameAndProduct_Id(username, productId);

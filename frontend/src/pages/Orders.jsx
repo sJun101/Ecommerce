@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from './api'; // 🎯 改用共用的 api 實例
+import api from './api'; 
 import { useNavigate } from 'react-router-dom';
 
 function Orders() {
@@ -8,7 +8,7 @@ function Orders() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    // 🛡️ 防護：沒 token 直接踢回登入
+    // 沒 token 直接踢回登入
     if (!token) {
       navigate('/login');
       return;
@@ -16,7 +16,6 @@ function Orders() {
 
     const fetchOrders = async () => {
       try {
-        // 🎯 自動帶入 baseURL 與 Token，不需要手動寫 headers
         const res = await api.get('/orders/my');
         console.log("成功抓到訂單資料：", res.data);
         setOrders(res.data);

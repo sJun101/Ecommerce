@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from './api'; // 🎯 改用共用的 api 實例
+import api from './api'; 
 import Swal from 'sweetalert2';
 
 function AdminProducts() {
@@ -7,10 +7,10 @@ function AdminProducts() {
   const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '', description: '', imageUrl: '' });
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // 1. 獲取商品清單
+  
   const fetchProducts = async () => {
     try {
-      const res = await api.get('/products'); // 自動帶入雲端 baseURL
+      const res = await api.get('/products'); 
       setProducts(res.data);
     } catch (err) {
       console.error("獲取商品失敗", err);
@@ -21,7 +21,7 @@ function AdminProducts() {
     fetchProducts();
   }, []);
 
-  // 2. 圖片上傳邏輯 (使用 XMLHttpRequest 配合雲端 IP)
+  
   const handleFileUpload = async () => {
     if (!selectedFile) return null;
 
@@ -30,7 +30,6 @@ function AdminProducts() {
 
     return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
-      // 🎯 指向雲端 EC2 的上傳路徑
       xhr.open('POST', 'http://54.238.208.83:8080/api/test/upload');
       
       xhr.onload = () => {
@@ -90,11 +89,11 @@ function AdminProducts() {
         imageUrl: finalImageUrl 
       };
       
-      // 🎯 改用 api.post，會自動夾帶 Token，不需要手動寫 headers
+      
       const res = await api.post('/products', productToSave);
 
       if (res.status === 200 || res.status === 201) {
-        Swal.fire("成功", "法寶已上架！", "success");
+        Swal.fire("成功", "商品已上架！", "success");
         setNewProduct({ name: '', price: '', stock: '', description: '', imageUrl: '' });
         setSelectedFile(null);
         const fileInput = document.getElementById('fileInput');
@@ -110,11 +109,11 @@ function AdminProducts() {
   // 4. 下架邏輯
   const handleDelete = async (id) => {
     const confirmDelete = await Swal.fire({
-      title: "確定要毀滅此法寶嗎？",
+      title: "確定下架此商品嗎？",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
-      confirmButtonText: "毀滅"
+      confirmButtonText: "下架"
     });
 
     if (!confirmDelete.isConfirmed) return;
@@ -123,7 +122,7 @@ function AdminProducts() {
       // 🎯 改用 api.delete，自動夾帶 Token
       await api.delete(`/api/products/${id}`);
       fetchProducts();
-      Swal.fire("已毀滅", "該法寶已從煉丹房消失", "success");
+      Swal.fire("已下架", "該商品已下架", "success");
     } catch (err) {
       Swal.fire("失敗", "下架失敗", "error");
     }
@@ -135,16 +134,16 @@ function AdminProducts() {
 
       {/* 上架表單 */}
       <div className="card shadow-sm border-0 mb-5">
-        <div className="card-header bg-primary text-white fw-bold">✨ 上架新法寶</div>
+        <div className="card-header bg-primary text-white fw-bold">✨ 上架新商品</div>
         <div className="card-body">
           <form onSubmit={handleAddProduct} className="row g-3">
             <div className="col-md-4">
-              <label className="form-label small fw-bold">法寶名稱</label>
-              <input type="text" className="form-control" placeholder="如：九轉金丹" 
+              <label className="form-label small fw-bold">商品名稱</label>
+              <input type="text" className="form-control" placeholder="如：可口可樂" 
                 value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} required />
             </div>
             <div className="col-md-4">
-              <label className="form-label small fw-bold">價格 (靈石)</label>
+              <label className="form-label small fw-bold">價格 </label>
               <input type="number" className="form-control" 
                 value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: e.target.value})} required />
             </div>
@@ -155,7 +154,7 @@ function AdminProducts() {
             </div>
             
             <div className="col-md-8">
-              <label className="form-label small fw-bold">法寶法相 (圖片上傳)</label>
+              <label className="form-label small fw-bold">商品照片 (圖片上傳)</label>
               <input type="file" id="fileInput" className="form-control" accept="image/*"
                 onChange={e => {
                   const file = e.target.files[0];
@@ -174,13 +173,13 @@ function AdminProducts() {
       </div>
 
       {/* 庫存列表 */}
-      <h4 className="mb-3 fw-bold text-secondary">📊 現有法寶清單</h4>
+      <h4 className="mb-3 fw-bold text-secondary">📊 現有商品清單</h4>
       <div className="table-responsive shadow-sm rounded">
         <table className="table table-hover align-middle bg-white mb-0">
           <thead className="table-dark">
             <tr>
               <th>ID</th>
-              <th>法相</th>
+              <th>照片</th>
               <th>名稱</th>
               <th>價格</th>
               <th>庫存</th>
@@ -194,7 +193,6 @@ function AdminProducts() {
                 <td>
                   {p.imageUrl ? (
                     <img 
-                      // 🎯 圖片顯示路徑改為雲端 EC2 的 IP
                       src={p.imageUrl.startsWith('http') 
                         ? p.imageUrl 
                         : `http://54.238.208.83:8080/uploads/${p.imageUrl}`} 
@@ -208,7 +206,7 @@ function AdminProducts() {
                   )}
                 </td>
                 <td className="fw-bold">{p.name}</td>
-                <td><span className="text-success fw-bold">{p.price}</span> 靈石</td>
+                <td><span className="text-success fw-bold">{p.price}</span> 元</td>
                 <td>{p.stock}</td>
                 <td className="text-center">
                   <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(p.id)}>

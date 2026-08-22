@@ -8,7 +8,6 @@ public class UserDTO {
     private String role;
     private LocalDateTime createdAt;
 
-    // 建立一個靜態轉換方法 (Factory Method)
     public static UserDTO fromEntity(com.example.demo.entity.User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
@@ -18,7 +17,6 @@ public class UserDTO {
         return dto;
     }
 
-    // Getters and Setters ...
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getUsername() { return username; }

@@ -12,14 +12,14 @@ public class CartItem {
 
     private String username;
 
-    // 與 Product 建立關聯
+
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     private Integer quantity;
 
-    // 無參建構子 (JPA 需要)
+
     public CartItem() {}
 
     public CartItem(Product product, Integer quantity) {
@@ -27,7 +27,6 @@ public class CartItem {
         this.quantity = quantity;
     }
 
-    // Getter & Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getUsername(){return username;}

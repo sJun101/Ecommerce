@@ -8,10 +8,9 @@ resource "aws_db_instance" "mysql" {
   identifier         = "${var.project_name}-mysql"
   instance_class     = "db.t3.micro"
 
-  # 👉 指定使用你的快照名稱
   snapshot_identifier = "ecommerce"
 
-  # ⚠️ 重要：當使用 snapshot_identifier 時，AWS 會從快照讀取以下設定，
+  #  重要：當使用 snapshot_identifier 時，AWS 會從快照讀取以下設定，
   # 因此在 Terraform 中必須將它們註解掉，否則會產生「參數衝突」錯誤：
   # engine                = "mysql"
   # engine_version        = "8.0"

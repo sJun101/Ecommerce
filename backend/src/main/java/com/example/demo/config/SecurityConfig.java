@@ -1,6 +1,6 @@
 package com.example.demo.config;
 
-import com.example.demo.config.JwtRequestFilter; // 確保你的過濾器路徑正確
+import com.example.demo.config.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,16 +44,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 1. 同時支援帶有或不帶 /api 的路徑，避免路由不匹配
+
                         .requestMatchers("/","/actuator/health","/auth/**", "/api/auth/**", "/products/**", "/api/products/**", "/uploads/**").permitAll()
 
-                        // 2. 管理員專區（同時涵蓋 /admin/** 與 /api/admin/**）
+                        //  管理員專區（同時涵蓋 /admin/** 與 /api/admin/**）
                         .requestMatchers("/admin/**", "/api/admin/**").hasAuthority("ROLE_ADMIN")
 
-                        // 3. 一般會員專區（同時涵蓋 /cart/** 與 /api/cart/** 等）
+                        //  一般會員專區（同時涵蓋 /cart/** 與 /api/cart/** 等）
                         .requestMatchers("/cart/**", "/api/cart/**", "/orders/**", "/api/orders/**", "/user/**", "/api/user/**").authenticated()
 
-                        // 4. 其他所有路徑都需要認證
+                        // 其他所有路徑都需要認證
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
@@ -64,7 +64,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 允許本地與你的前端訪問來源（可視情況調整或直接用 setAllowedOriginPatterns 支援所有來源）
+
         configuration.setAllowedOriginPatterns(List.of("*"));
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

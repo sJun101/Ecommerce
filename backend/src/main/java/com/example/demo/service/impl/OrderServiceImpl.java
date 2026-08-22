@@ -16,18 +16,18 @@ public class OrderServiceImpl implements OrderService {
     @Autowired private ProductRepository productRepository;
     @Autowired private CartRepository cartRepository;
 
-    // --- 你原本寫好的下單邏輯 (保留) ---
+
     @Override
     @Transactional
     public Order placeOrder(String username, Long productId, Integer quantity) {
-        // 1. 透過 username 找到用戶 (比直接拿 userId 更安全)
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("找不到使用者: " + username));
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("找不到商品 ID: " + productId));
 
-        // 2. 業務邏輯保持不變
+
         if (product.getStock() < quantity) {
             throw new RuntimeException("庫存不足！目前剩餘：" + product.getStock());
         }
@@ -44,10 +44,10 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(order);
     }
 
-    // --- 2. 補上這個方法，解決查詢問題 ---
+
     @Override
     public List<Order> getAllOrders() {
-        return orderRepository.findAll(); // orderRepository 已經在上面定義過了，這裡不會紅字
+        return orderRepository.findAll();
     }
 
     @Override
@@ -58,17 +58,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void checkout(String username) {
-        // 1. 取得購物車資料
+
         List<CartItem> cartItems = cartRepository.findByUsername(username);
         if (cartItems == null || cartItems.isEmpty()) {
             throw new RuntimeException("購物車是空的，無法結帳");
         }
 
-        // 2. 透過 username 找到用戶
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("找不到使用者"));
 
-        // 3. 處理每一項購物車商品
+
         for (CartItem item : cartItems) {
             Product product = item.getProduct();
 
@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("找不到訂單 ID: " + orderId));
 
-        // 假設你的 Order 實體裡面有 setStatus 欄位
+
         order.setStatus(status);
         orderRepository.save(order);
     }
