@@ -42,4 +42,13 @@ jobs:
 
     - name: Invalidate CloudFront Cache
       run: |
-        aws cloudfront create-invalidation --distribution-id E91L9MGXK33DQ --paths "/*"
+        DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?tags.Name=='ecommerce-cloudfront'].Id | [0]" --output text)
+        
+        if [ "$DIST_ID" = "None" ] || [ -z "$DIST_ID" ]; then
+          echo "Error: Could not find CloudFront distribution."
+          exit 1
+        fi
+        
+        echo "Found Distribution ID: $DIST_ID"
+        aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
+        
