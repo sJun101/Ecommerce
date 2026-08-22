@@ -48,4 +48,4 @@ jobs:
 
     - name: Update ECS Service
       run: |
-        aws ecs update-service --cluster my-ecommerce-cluster --service spring-boot-service --force-new-deployment
+        aws ecs update-service --cluster ecommerce-cluster --service ecommerce-backend-service --force-new-deployment
