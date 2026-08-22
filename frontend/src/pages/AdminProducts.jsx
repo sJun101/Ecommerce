@@ -130,7 +130,7 @@ function AdminProducts() {
 
   return (
     <div className="container mt-4">
-      <h2 className="fw-bold text-danger mb-4">⚒️ 煉丹房 (管理員面板)</h2>
+      <h2 className="fw-bold text-danger mb-4">(管理員面板)</h2>
 
       {/* 上架表單 */}
       <div className="card shadow-sm border-0 mb-5">
